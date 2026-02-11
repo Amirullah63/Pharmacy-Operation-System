@@ -1,0 +1,484 @@
+{
+  "name": "Pharmacy Operation System",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7d937bfa-02f5-4b7d-b8e9-58a2e69b9b7b",
+              "leftValue": "={{ $json['Expiry Date'] }}",
+              "rightValue": "={{ $now.plus({ months: 3 }).toISODate() }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "before"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -1152,
+        -96
+      ],
+      "id": "3de834e7-39b7-4cfb-bc93-abab781d06fe",
+      "name": "Check Expiry"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ff98226e-606c-4d19-89ed-e9cd261eccbe",
+              "leftValue": "={{ $json['Stock Level'] }}",
+              "rightValue": "={{ $json['Min Threshold'] }}",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -1152,
+        -272
+      ],
+      "id": "6d13e126-cec1-4ec2-a617-3172ef0fcf59",
+      "name": "Check Stock"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d8244ff0-85e3-41f8-8ba4-c1f2c6cf0e66",
+              "leftValue": "={{ $json['Is High Alert'] }}",
+              "rightValue": "false",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -1152,
+        96
+      ],
+      "id": "d0a9ec6c-aaf2-4cd2-a222-561daf0cbb93",
+      "name": "High alert"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -560,
+        -112
+      ],
+      "id": "d9d31d45-a07b-485c-9f44-c2b8cfa274ac",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -96
+      ],
+      "id": "9fee6508-d978-436b-adc0-3bd36e0e7c13",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7071bfee-2b74-4eef-8fcc-0f9c0119036d",
+              "name": "Issue Type",
+              "value": "Low Stock",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -832,
+        -272
+      ],
+      "id": "62654904-7588-4ad0-ad76-ce2cd6bb6850",
+      "name": "Stock Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "534bc9bd-b2c7-4b46-991a-a64842e0be00",
+              "name": "Issue Type",
+              "value": "Expiring Soon",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -832,
+        -96
+      ],
+      "id": "7a7ce3a9-d74a-465a-8277-d66a41c6dd46",
+      "name": "Expiry Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cb1c32a3-a57c-4a6c-9564-6581369e5e8f",
+              "name": "Issue Type",
+              "value": "High Alert Medicine",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -832,
+        96
+      ],
+      "id": "e890baea-449e-4327-b996-089f2a02c555",
+      "name": "Hight Alert Edit Field"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1680,
+        -96
+      ],
+      "id": "6a847b85-11ce-452e-86fa-2437c45a8718",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "sendTo": "aamiru4212@gmail.com",
+        "subject": "URGENT: Pharmacy Inventory Alert; Action Requird",
+        "message": "=The following pharmacy items require attention: {{ $json.data.map(item => item[\"Medicine Name\"] + \" [\" + item[\"Issue Type\"] + \"]\").join(\"\\n\") }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        80,
+        -96
+      ],
+      "id": "56c256ef-928b-4386-8b74-ebf8e9d04fc5",
+      "name": "Send a message",
+      "webhookId": "42bcfc70-a219-4770-8d05-15461a481874",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "iz6Kow7l6hzEaFoV",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "TRIGGER & FETCH\n1) Node: When clicking 'Execute workflow'\n2) Node: Get row(s) in sheet\n3) Action: Manually triggers the workflow to pull the latest 15 rows from the 'Pharmacy Operation System' Google Sheet.",
+        "height": 352,
+        "width": 448,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1728,
+        -272
+      ],
+      "typeVersion": 1,
+      "id": "10339bb4-7eb0-41d1-94c3-69d9a3bb8c63",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "INVENTORY ANALYSIS\n1) Nodes: Check Stock / Check Expiry / High Alert\n2) Action: Splits the 15 items into three logic branches:\n2) Stock: Items below threshold.\n3) Expiry: Items near expiration date.\n4) Safety: High-alert medications requiring extra care.",
+        "height": 720,
+        "width": 272,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1232,
+        -480
+      ],
+      "typeVersion": 1,
+      "id": "a8c49dda-d8f7-40f9-916d-d05cd1e847f6",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "STATUS LABELING\n1) Nodes: Edit Fields (manual)\n2) Action: Assigns an 'Issue Type' (e.g., \"Low Stock\") to each item.\n3) CRITICAL: 'Include Other Input Fields' is set to ON to ensure the 'Medicine Name' is passed to the final email.",
+        "height": 720,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -912,
+        -480
+      ],
+      "typeVersion": 1,
+      "id": "1e9aae11-a505-43d7-8856-dfd3e2c2de8c",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "CONSOLIDATION\n1) Node: Merge (Append)\n2) Node: Aggregate\n3) Action: Combines the different alert branches back into a single list and formats them so they can be sent in one clear email body instead of multiple separate messages.",
+        "height": 352,
+        "width": 448,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -624,
+        -272
+      ],
+      "typeVersion": 1,
+      "id": "8f8816f5-6eda-4b53-b1ae-400a841fc796",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "EMAIL NOTIFICATION\n1) Node: Send a message (Gmail)\n2) Recipient: aamiru4212@gmail.com\n3) Action: Sends the final formatted list of pharmacy alerts.\n4) Note: If 'Authentication Failed' occurs, re-authorize the Gmail credential via the pencil icon.",
+        "height": 352,
+        "width": 448,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -128,
+        -272
+      ],
+      "typeVersion": 1,
+      "id": "cefe832c-58c3-4b03-a066-0a038546fa40",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1tl-0IGISYeozqOGXH_j1M7e0ptwNlArCzCKt46_-jUY",
+          "mode": "list",
+          "cachedResultName": "Pharmacy Operation System",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tl-0IGISYeozqOGXH_j1M7e0ptwNlArCzCKt46_-jUY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tl-0IGISYeozqOGXH_j1M7e0ptwNlArCzCKt46_-jUY/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1440,
+        -96
+      ],
+      "id": "77279dc5-bba5-4ad1-b2f7-1c6470f2a9a3",
+      "name": "Data From Spreadsheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CK7zLXJRDIu9MgaI",
+          "name": "Google Sheets account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Check Expiry": {
+      "main": [
+        [
+          {
+            "node": "Expiry Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "High alert": {
+      "main": [
+        [
+          {
+            "node": "Hight Alert Edit Field",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Stock": {
+      "main": [
+        [
+          {
+            "node": "Stock Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stock Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Expiry Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Hight Alert Edit Field": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Data From Spreadsheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data From Spreadsheet": {
+      "main": [
+        [
+          {
+            "node": "Check Stock",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check Expiry",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "High alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "01ba02f6-6330-4341-a97d-0a86dc1a5776",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "15e84037ccceac1b2a37642e7d5d0152f3fc1a06f45420046df6bee2675a8710"
+  },
+  "id": "SiSdvtCZIjbJzItr",
+  "tags": []
+}
